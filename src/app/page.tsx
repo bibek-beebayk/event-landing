@@ -73,8 +73,14 @@ export default function Home() {
       setStep(2);
       setStatus('idle');
 
-    } catch (err: any) {
-      const message = err.message || 'Something went wrong';
+    } catch (err: unknown) {
+      let message = 'Something went wrong';
+      if (err instanceof Error) {
+        message = err.message;
+      } else if (typeof err === 'object' && err !== null && 'message' in err) {
+        message = String((err as Record<string, unknown>).message); // pragmatic cast for non-Error objects with message
+      }
+
       if (message.toLowerCase().includes('already registered')) {
         setStatus('already_registered');
       } else {
