@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@cloudflare/next-on-pages": "1.13.16",
-    "next": "15.1.0",
+    "next": "15.1.11",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
