@@ -26,7 +26,7 @@ export default function Home() {
     otp_code: ''
   });
 
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'already_registered'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
@@ -65,14 +65,22 @@ export default function Home() {
       });
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || 'Request failed');
+      if (!res.ok) {
+        const msg = data.message || (data.errors && data.errors.error) || data.error || 'Request failed';
+        throw new Error(msg);
+      }
 
       setStep(2);
       setStatus('idle');
 
-    } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Something went wrong');
-      setStatus('error');
+    } catch (err: any) {
+      const message = err.message || 'Something went wrong';
+      if (message.toLowerCase().includes('already registered')) {
+        setStatus('already_registered');
+      } else {
+        setErrorMsg(message);
+        setStatus('error');
+      }
     }
   };
 
@@ -130,8 +138,29 @@ export default function Home() {
             </div>
           )}
 
+          {/* ALREADY REGISTERED STATE */}
+          {status === 'already_registered' && (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                background: 'rgba(74, 222, 128, 0.1)',
+                border: '1px solid rgba(74, 222, 128, 0.3)',
+                padding: '2rem',
+                borderRadius: '1rem',
+                marginBottom: '1rem'
+              }}>
+                <h2 style={{ color: '#4ade80', marginBottom: '1rem' }}>✓ Already Registered</h2>
+                <p style={{ color: 'white', fontSize: '1.1rem' }}>
+                  You are already on the list for this event!
+                </p>
+                <p style={{ color: 'rgba(255,255,255,0.7)', marginTop: '0.5rem', fontSize: '0.9rem' }}>
+                  {/* Please check your email for access details. */}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* FORM STEPS */}
-          {status !== 'success' && (
+          {status !== 'success' && status !== 'already_registered' && (
             <>
               {step === 1 && (
                 <form onSubmit={handleRegisterInit}>
