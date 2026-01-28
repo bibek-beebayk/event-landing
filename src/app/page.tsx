@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 
-const API_BASE = 'http://localhost:8000/api/events';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 interface EventData {
   id: number;
