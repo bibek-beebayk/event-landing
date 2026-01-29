@@ -34,6 +34,7 @@ body {
   /* Firefox */
   -ms-overflow-style: none;
   /* IE/Edge */
+  scroll-behavior: smooth;
 }
 
 ::-webkit-scrollbar {
