@@ -59,6 +59,12 @@ export default function Home() {
         throw new Error(data.message || (data.errors && data.errors.error) || data.error || 'Request failed');
       }
 
+      // Check for backend-driven redirect (Already Registered)
+      if (data.status === 'already_registered' && data.redirect_url) {
+        window.location.href = data.redirect_url;
+        return;
+      }
+
       setStep(2);
       setStatus('idle');
     } catch (err: unknown) {
@@ -69,6 +75,7 @@ export default function Home() {
         message = String((err as Record<string, unknown>).message);
       }
 
+      // Fallback for older backend responses if any
       if (message.toLowerCase().includes('already registered')) {
         setStatus('already_registered');
       } else {
@@ -93,6 +100,14 @@ export default function Home() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Verification failed');
+
+      // Case: Existing User (Verified & Active) -> Redirect Immediate
+      if (data.is_existing_user && data.redirect_url) {
+        window.location.href = data.redirect_url;
+        return;
+      }
+
+      // Case: New User -> Check Inbox
       setStatus('success');
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Verification failed');
