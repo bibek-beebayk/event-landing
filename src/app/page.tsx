@@ -59,9 +59,9 @@ export default function Home() {
         throw new Error(data.message || (data.errors && data.errors.error) || data.error || 'Request failed');
       }
 
-      // Check for backend-driven redirect (Already Registered)
-      if (data.status === 'already_registered' && data.redirect_url) {
-        window.location.href = data.redirect_url;
+      // Check for backend-driven status (Already Registered)
+      if (data.status === 'already_registered') {
+        setStatus('already_registered');
         return;
       }
 
