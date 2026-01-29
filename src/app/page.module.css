@@ -1,172 +1,373 @@
 .main {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 2rem;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  padding: 0;
+  color: var(--foreground);
+  background-color: #fdfbf7;
+  /* Cream background */
 }
 
-/* Background ambiance */
-.main::before {
-  content: '';
+/* --- BACKGROUND DESIGN ELEMENTS --- */
+
+/* 1. Large Top Right Green Circle Overlay */
+.bgGradientRight {
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at center, rgba(157, 78, 221, 0.15) 0%, transparent 60%);
+  top: -10%;
+  right: -10%;
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, #e8f5e9 0%, transparent 70%);
+  opacity: 0.8;
   z-index: 0;
   pointer-events: none;
 }
 
-.hero {
-  z-index: 1;
-  text-align: center;
-  max-width: 800px;
-  width: 100%;
+/* 2. Left Side Faint Gradient */
+.bgGradientLeft {
+  position: absolute;
+  top: 20%;
+  left: -10%;
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(circle, #fff8e1 0%, transparent 70%);
+  /* Light gold tint */
+  opacity: 0.6;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 3. Left Gold/Beige Organic Shape */
+.shapeLeftGold {
+  position: absolute;
+  top: 15%;
+  left: -50px;
+  width: 200px;
+  height: 200px;
+  background: #d4af37;
+  /* Gold/Beige */
+  opacity: 0.6;
+  border-radius: 40% 60% 30% 70% / 50% 30% 70% 50%;
+  transform: rotate(-15deg);
+  z-index: 0;
+}
+
+/* 4. Left Geometric Outline (Hexagon-ish) */
+.shapeLeftGeo {
+  position: absolute;
+  top: 35%;
+  left: 5%;
+  width: 15rem;
+  height: 15rem;
+  border: 4px solid rgba(212, 175, 55, 0.15);
+  /* Faint gold outline */
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  z-index: 0;
+  transform: rotate(10deg);
+}
+
+/* 5. Right Top Large Green Blob */
+.shapeRightGreen {
+  position: absolute;
+  top: 5%;
+  right: -5%;
+  width: 30vw;
+  height: 30vw;
+  min-width: 300px;
+  background: #d5f5e3;
+  /* Pastel Green */
+  opacity: 0.4;
+  border-radius: 60% 40% 70% 30% / 60% 30% 70% 40%;
+  z-index: 0;
+}
+
+/* 6. Right Top Floating Beige Shard/Triangle */
+.shapeRightShard {
+  position: absolute;
+  top: 8%;
+  right: 25%;
+  width: 0;
+  height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 70px solid #eaddcf;
+  /* Beige shard */
+  transform: rotate(25deg);
+  opacity: 0.8;
+  z-index: 0;
+}
+
+/* 7. Right Side Thin Geometric Polygon Outline */
+.shapeRightGeo {
+  position: absolute;
+  top: 30%;
+  right: 5%;
+  width: 200px;
+  height: 200px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transform: rotate(45deg);
+  z-index: 0;
+}
+
+/* 8. Bottom Right Pink Shape */
+.shapeBottomPink {
+  position: absolute;
+  bottom: -5%;
+  right: -50px;
+  width: 250px;
+  height: 250px;
+  background: #fadbd8;
+  /* Pastel Pink */
+  border-radius: 50%;
+  opacity: 0.7;
+  z-index: 0;
+}
+
+/* 9. Bottom Left Green Shape */
+.shapeBottomGreen {
+  position: absolute;
+  bottom: -50px;
+  left: 10%;
+  width: 180px;
+  height: 180px;
+  background: #a9dfbf;
+  /* Stronger Pastel Green */
+  border-radius: 50%;
+  opacity: 0.4;
+  z-index: 0;
+}
+
+
+/* --- LAYOUT AND CONTENT (Existing) --- */
+
+/* Header */
+.header {
+  padding: 2rem 3rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
-}
-
-.logoContainer {
-  margin-bottom: 2rem;
-  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-.title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(to right, #ffd700, #fffacD, #ffd700);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-.description {
-  font-size: 1.2rem;
-  color: var(--text-muted);
-  margin-top: 1rem;
-  line-height: 1.6;
-}
-
-.card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 3rem;
-  box-shadow: var(--glass-shadow);
-  width: 100%;
-  max-width: 500px;
-  margin-top: 2rem;
-  transition: transform 0.3s ease;
+  gap: 1rem;
+  z-index: 1;
   position: relative;
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+.logoIcon {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandName {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--foreground);
+}
+
+.brandTagline {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* Content */
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  flex: 1;
+}
+
+.topSection {
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  position: relative;
+}
+
+.preTitle {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.mainTitle {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 3.5rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.subText {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Form Card */
+.card {
+  background: var(--card-bg);
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  /* Softer, larger shadow */
+  width: 100%;
+  max-width: 480px;
+  margin-bottom: 5rem;
+  border: 1px solid white;
+  /* Subtle highlight */
 }
 
 .inputGroup {
-  margin-bottom: 1.5rem;
-  text-align: left;
-}
-
-.label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: var(--primary);
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 600;
+  margin-bottom: 1.2rem;
 }
 
 .input {
   width: 100%;
-  padding: 1rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  background: rgba(0, 0, 0, 0.2);
-  color: white;
+  padding: 1rem 1.2rem;
+  border: 1px solid #e0c9a6;
+  /* Goldish border */
+  background: #fffdf5;
+  /* Warm white */
+  border-radius: 8px;
   font-size: 1rem;
-  transition: all 0.3s ease;
+  color: var(--foreground);
+  transition: all 0.2s;
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
-  background: rgba(0, 0, 0, 0.4);
+  border-color: #d4af37;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  background: white;
+}
+
+.input::placeholder {
+  color: #a0a0a0;
 }
 
 .cta {
-  background: linear-gradient(135deg, #ffd700 0%, #ffb900 100%);
-  color: #1a0b2e;
-  padding: 1rem 2rem;
-  border-radius: 50px;
-  border: none;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
   width: 100%;
+  padding: 1rem;
+  background: #567bba;
+  /* Periwinkle Blue from design */
+  color: white;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
   margin-top: 1rem;
+  transition: background 0.2s;
+  box-shadow: 0 4px 15px rgba(86, 123, 186, 0.2);
 }
 
 .cta:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-  filter: brightness(1.1);
+  background: #4a6fa5;
+  transform: translateY(-1px);
 }
 
 .cta:disabled {
-  opacity: 0.6;
+  opacity: 0.7;
   cursor: not-allowed;
-  filter: grayscale(0.5);
+  transform: none;
+}
+
+/* Footer Features */
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+  width: 100%;
+  padding-top: 3rem;
+  border-top: none;
+}
+
+.featureCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.featureIcon {
+  font-size: 1.8rem;
+  color: #bfa15f;
+  margin-bottom: 0.5rem;
+}
+
+.featureTitle {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--foreground);
+}
+
+.featureText {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-muted);
 }
 
 .error {
-  color: var(--error);
-  margin-top: 1rem;
-  text-align: center;
-  background: rgba(255, 77, 77, 0.1);
-  padding: 0.5rem;
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 0.75rem;
   border-radius: 8px;
-  border: 1px solid rgba(255, 77, 77, 0.2);
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.successTitle {
+  color: #567bba;
+  margin-bottom: 0.5rem;
 }
 
 .otpInput {
   text-align: center;
-  letter-spacing: 1rem;
-  font-size: 1.5rem;
-  font-family: monospace;
+  letter-spacing: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .mainTitle {
+    font-size: 2.2rem;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .featureCol {
+    align-items: center;
+  }
+
+  .header {
+    padding: 1.5rem;
+    justify-content: center;
+  }
+
+  /* Adjust decorative elements for mobile so they don't overwhelm */
+  .shapeLeftGeo,
+  .shapeRightGeo {
+    display: none;
+  }
+
+  .shapeRightGreen {
+    right: -20%;
+  }
 }

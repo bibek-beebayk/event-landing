@@ -14,14 +14,16 @@ interface EventData {
   poster: string | null;
 }
 
-
-
 export default function Home() {
   const [event, setEvent] = useState<EventData | null>(null);
   const [step, setStep] = useState(1); // 1: Register Init, 2: OTP
-
   const [formData, setFormData] = useState({
-    username: '',
+    username: '', // Still needed for API but maybe hide/auto-fill if design only shows Name/Email? Design shows "Name" and "Email". 
+    // I will map "Name" to username for now, or keep username field hidden/auto-generated?
+    // The backend likely expects 'username'. The design asks for "Name" (could be Full Name).
+    // User request: "I wnt this design". Design has "Name" and "Email".
+    // I'll assume "Name" -> Username for simplicity, or add a Name field and use email prefix as username.
+    // Let's stick to Name -> Username label change for now to minimize backend churn, or treat "Name" as username.
     email: '',
     otp_code: ''
   });
@@ -30,22 +32,10 @@ export default function Home() {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    // Fetch latest event
     fetch(`${API_BASE}/latest/`)
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch event');
-        return res.json();
-      })
-      .then(data => {
-        if (data.data) {
-          setEvent(data.data);
-        } else {
-          setEvent(data); // Fallback if wrapper is missing
-        }
-      })
-      .catch(err => {
-        console.error(err);
-      });
+      .then(res => res.ok ? res.json() : Promise.reject('Failed'))
+      .then(data => setEvent(data.data || data))
+      .catch(console.error);
   }, []);
 
   const handleRegisterInit = async (e: React.FormEvent) => {
@@ -58,7 +48,7 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: formData.username,
+          username: formData.username, // Using Name input as username
           email: formData.email,
           event_id: event?.id
         }),
@@ -66,19 +56,17 @@ export default function Home() {
       const data = await res.json();
 
       if (!res.ok) {
-        const msg = data.message || (data.errors && data.errors.error) || data.error || 'Request failed';
-        throw new Error(msg);
+        throw new Error(data.message || (data.errors && data.errors.error) || data.error || 'Request failed');
       }
 
       setStep(2);
       setStatus('idle');
-
     } catch (err: unknown) {
       let message = 'Something went wrong';
       if (err instanceof Error) {
         message = err.message;
       } else if (typeof err === 'object' && err !== null && 'message' in err) {
-        message = String((err as Record<string, unknown>).message); // pragmatic cast for non-Error objects with message
+        message = String((err as Record<string, unknown>).message);
       }
 
       if (message.toLowerCase().includes('already registered')) {
@@ -93,7 +81,6 @@ export default function Home() {
   const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
-
     try {
       const res = await fetch(`${API_BASE}/verify-otp/`, {
         method: 'POST',
@@ -105,120 +92,156 @@ export default function Home() {
         }),
       });
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.error || 'Verification failed');
-
       setStatus('success');
-
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Verification failed');
       setStatus('error');
     }
   };
 
-  if (!event) return <div className={styles.main}>Loading Event...</div>;
+  if (!event) return <div className={styles.main} style={{ justifyContent: 'center', alignItems: 'center' }}>Loading...</div>;
 
   return (
     <main className={styles.main}>
-      <div className={styles.hero}>
+      {/* Background Decor */}
+      <div className={styles.bgGradientRight} />
+      <div className={styles.bgGradientLeft} />
 
-        {/* Logo Section */}
-        <div className={styles.logoContainer}>
-          <img src="/logo.png" alt="High Rollin Logo" style={{ maxWidth: '300px', height: 'auto' }} />
+      {/* Specific Shapes from Design */}
+      <div className={styles.shapeLeftGold} />
+      <div className={styles.shapeLeftGeo} />
+
+      <div className={styles.shapeRightGreen} />
+      <div className={styles.shapeRightShard} />
+      <div className={styles.shapeRightGeo} />
+
+      <div className={styles.shapeBottomPink} />
+      <div className={styles.shapeBottomGreen} />
+
+      {/* Header */}
+      <header className={styles.header}>
+        <img src="/logo.png?v=2" alt="Logo" className={styles.logoIcon} />
+        <div className={styles.headerText}>
+          <span className={styles.brandName}>Rollin Community</span>
+          <span className={styles.brandTagline}>&quot;A private community experience&quot;</span>
+        </div>
+      </header>
+
+      <div className={styles.container}>
+        {/* Main Content */}
+        <div className={styles.topSection}>
+          <div className={styles.preTitle}>Rollin Community Event</div>
+          <h1 className={styles.mainTitle}>Community Access Registration</h1>
+          <p className={styles.subText}>
+            Rollin Community is a private, community-led platform created to bring players together through shared interests and exclusive events in a secure environment.
+          </p>
         </div>
 
-        <h1 className={styles.title}>{event.title}</h1>
-        <p className={styles.description}>{event.description}</p>
-
-        <p style={{ color: 'var(--secondary)', marginBottom: '2rem', fontWeight: '600', letterSpacing: '1px' }}>
-          {new Date(event.start_date).toDateString()} — {new Date(event.end_date).toDateString()}
-        </p>
-
+        {/* Registration Card */}
         <div className={styles.card}>
-
-          {/* SUCCESS STATES */}
-          {status === 'success' && (
+          {status === 'success' ? (
             <div style={{ textAlign: 'center' }}>
-              <h2 style={{ color: 'var(--primary)', marginBottom: '1rem' }}>Success!</h2>
-              <p style={{ color: 'white' }}>Please check your email for the link to complete your personalized setup or access the event.</p>
+              <h2 className={styles.successTitle}>Check your inbox!</h2>
+              <p className={styles.featureText}>
+                We&apos;ve sent an email to <strong>{formData.email}</strong> with your secure credentials and access link.
+              </p>
             </div>
-          )}
-
-          {/* ALREADY REGISTERED STATE */}
-          {status === 'already_registered' && (
+          ) : status === 'already_registered' ? (
             <div style={{ textAlign: 'center' }}>
-              <div style={{
-                background: 'rgba(74, 222, 128, 0.1)',
-                border: '1px solid rgba(74, 222, 128, 0.3)',
-                padding: '2rem',
-                borderRadius: '1rem',
-                marginBottom: '1rem'
-              }}>
-                <h2 style={{ color: '#4ade80', marginBottom: '1rem' }}>✓ Already Registered</h2>
-                <p style={{ color: 'white', fontSize: '1.1rem' }}>
-                  You are already on the list for this event!
-                </p>
-                <p style={{ color: 'rgba(255,255,255,0.7)', marginTop: '0.5rem', fontSize: '0.9rem' }}>
-                  {/* Please check your email for access details. */}
-                </p>
-              </div>
+              <h2 className={styles.successTitle} style={{ color: '#4ade80' }}>Welcome Back!</h2>
+              <p className={styles.featureText}>
+                You are already registered for this event.
+              </p>
+              <p className={styles.featureText} style={{ marginTop: '1rem' }}>
+                Please check your email for your access credentials.
+              </p>
             </div>
-          )}
-
-          {/* FORM STEPS */}
-          {status !== 'success' && status !== 'already_registered' && (
+          ) : (
             <>
-              {step === 1 && (
+              {step === 1 ? (
                 <form onSubmit={handleRegisterInit}>
-                  <h2 style={{ marginBottom: '2rem', textAlign: 'center', color: 'white' }}>Event Registration</h2>
-
                   <div className={styles.inputGroup}>
-                    <label className={styles.label}>Username</label>
-                    <input className={styles.input} type="text" required value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} placeholder="Enter your username" />
+                    <input
+                      className={styles.input}
+                      type="text"
+                      placeholder="Username"
+                      required
+                      value={formData.username}
+                      onChange={e => setFormData({ ...formData, username: e.target.value })}
+                    />
                   </div>
-
                   <div className={styles.inputGroup}>
-                    <label className={styles.label}>Email</label>
-                    <input className={styles.input} type="email" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} placeholder="your@email.com" />
+                    <input
+                      className={styles.input}
+                      type="email"
+                      placeholder="Email"
+                      required
+                      value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
+                    />
                   </div>
-
-                  <button type="submit" disabled={status === 'loading'} className={styles.cta}>
-                    {status === 'loading' ? 'Processing...' : 'Continue'}
+                  <button type="submit" className={styles.cta} disabled={status === 'loading'}>
+                    {status === 'loading' ? 'Sending...' : 'Send Verification Code'}
                   </button>
                 </form>
-              )}
-
-              {step === 2 && (
+              ) : (
                 <form onSubmit={handleVerifyOTP}>
-                  <h2 style={{ marginBottom: '2rem', textAlign: 'center', color: 'white' }}>Verify Identity</h2>
-                  <p style={{ marginBottom: '1.5rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                    Enter the code sent to {formData.email}.
+                  <p className={styles.featureText} style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                    Enter the code sent to {formData.email}
                   </p>
-
                   <div className={styles.inputGroup}>
-                    <label className={styles.label} style={{ textAlign: 'center' }}>One-Time Password</label>
                     <input
                       className={`${styles.input} ${styles.otpInput}`}
                       type="text"
-                      required
+                      placeholder="000000"
                       maxLength={6}
+                      required
                       value={formData.otp_code}
                       onChange={e => setFormData({ ...formData, otp_code: e.target.value })}
                     />
                   </div>
-
-                  <button type="submit" disabled={status === 'loading'} className={styles.cta}>
-                    {status === 'loading' ? 'Verifying...' : 'Finalize'}
+                  <button type="submit" className={styles.cta} disabled={status === 'loading'}>
+                    {status === 'loading' ? 'Verifying...' : 'Verify Access'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    style={{ background: 'none', color: '#999', fontSize: '0.9rem', marginTop: '1rem', width: '100%', textDecoration: 'underline' }}
+                  >
+                    Change Email
                   </button>
                 </form>
               )}
 
-              {status === 'error' && (
-                <p className={styles.error}>{errorMsg}</p>
-              )}
+              {status === 'error' && <div className={styles.error}>{errorMsg}</div>}
             </>
           )}
+        </div>
 
+        {/* Footer Features */}
+        <div className={styles.features}>
+          <div className={styles.featureCol}>
+            <div className={styles.featureIcon}>✉️</div>
+            <div className={styles.featureTitle}>1) What happens next</div>
+            <div className={styles.featureText}>
+              Receive an email with secure credentials. Follow the link to enter the community portal.
+            </div>
+          </div>
+          <div className={styles.featureCol}>
+            <div className={styles.featureIcon}>👥</div>
+            <div className={styles.featureTitle}>2) Who is this for</div>
+            <div className={styles.featureText}>
+              This event is for registered members of the Rollin Community interested in participating.
+            </div>
+          </div>
+          <div className={styles.featureCol}>
+            <div className={styles.featureIcon}>🛡️</div>
+            <div className={styles.featureTitle}>3) Privacy & access control</div>
+            <div className={styles.featureText}>
+              Your information is secure and used solely for community access verification purposes.
+            </div>
+          </div>
         </div>
       </div>
     </main>

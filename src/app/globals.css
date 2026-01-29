@@ -1,11 +1,16 @@
 :root {
-  --background: #0f0c29;
-  --foreground: #ffffff;
-  --primary: #7b2cbf;
-  --secondary: #9d4edd;
-  --accent: #e0aaff;
-  --text-muted: #b8b8b8;
-  --border: #3c096c;
+  --background: #fdfbf7;
+  --foreground: #1a1a1a;
+  --primary: #567bba;
+  --primary-hover: #4a6fa5;
+  --secondary: #d4af37;
+  --accent-green: #d5f5e3;
+  --accent-pink: #fadbd8;
+  --accent-yellow: #f9e79f;
+  --text-muted: #555555;
+  --border: #e0e0e0;
+  --card-bg: #ffffff;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 * {
@@ -15,10 +20,11 @@
 }
 
 body {
-  background: linear-gradient(135deg, var(--background), #302b63, #24243e);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 a {
