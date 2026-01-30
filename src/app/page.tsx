@@ -28,7 +28,7 @@ export default function Home() {
     otp_code: ''
   });
 
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'already_registered'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'already_registered' | 'existing_user'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
@@ -59,9 +59,13 @@ export default function Home() {
         throw new Error(data.message || (data.errors && data.errors.error) || data.error || 'Request failed');
       }
 
-      // Check for backend-driven status (Already Registered)
-      if (data.status === 'already_registered') {
-        setStatus('already_registered');
+      console.log('Registration Response:', data);
+
+      const responsePayload = data.data || data;
+
+      // Check for backend-driven status
+      if (responsePayload.status === 'already_registered' || responsePayload.status === 'existing_user') {
+        setStatus('existing_user');
         return;
       }
 
@@ -162,14 +166,14 @@ export default function Home() {
                 We&apos;ve sent an email to <strong>{formData.email}</strong> with your secure credentials and access link.
               </p>
             </div>
-          ) : status === 'already_registered' ? (
+          ) : (status === 'already_registered' || status === 'existing_user') ? (
             <div style={{ textAlign: 'center' }}>
-              <h2 className={styles.successTitle} style={{ color: '#4ade80' }}>Welcome Back!</h2>
+              <h2 className={styles.successTitle} style={{ color: '#4ade80' }}>Check your mail!</h2>
               <p className={styles.featureText}>
-                You are already registered for this event.
+                We found an existing account for this email.
               </p>
               <p className={styles.featureText} style={{ marginTop: '1rem' }}>
-                Please check your email for your access credentials.
+                We have sent the event link to your email.
               </p>
             </div>
           ) : (
