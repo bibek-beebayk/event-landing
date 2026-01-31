@@ -48,12 +48,13 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: formData.username, // Using Name input as username
+          username: formData.username,
           email: formData.email,
           event_id: event?.id
         }),
       });
       const data = await res.json();
+
 
       if (!res.ok) {
         throw new Error(data.message || (data.errors && data.errors.error) || data.error || 'Request failed');
@@ -63,13 +64,19 @@ export default function Home() {
 
       const responsePayload = data.data || data;
 
-      // Check for backend-driven status
-      if (responsePayload.status === 'already_registered' || responsePayload.status === 'existing_user') {
-        setStatus('existing_user');
+      // Case 1: Already Registered
+      if (responsePayload.status === 'already_registered') {
+        setStatus('already_registered');
         return;
       }
 
-      setStep(2);
+      // Case 3 & 4: OTP Sent
+      if (responsePayload.status === 'otp_sent') {
+        setStep(2);
+        setStatus('idle');
+        return;
+      }
+
       setStatus('idle');
     } catch (err: unknown) {
       let message = 'Something went wrong';
@@ -79,13 +86,9 @@ export default function Home() {
         message = String((err as Record<string, unknown>).message);
       }
 
-      // Fallback for older backend responses if any
-      if (message.toLowerCase().includes('already registered')) {
-        setStatus('already_registered');
-      } else {
-        setErrorMsg(message);
-        setStatus('error');
-      }
+      // Handle "Username taken" explicitly if needed, but generic error display works
+      setErrorMsg(message);
+      setStatus('error');
     }
   };
 
@@ -103,18 +106,12 @@ export default function Home() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Verification failed');
+      if (!res.ok) throw new Error(data.error || 'Invalid OTP. Please try again.');
 
-      // Case: Existing User (Verified & Active) -> Redirect Immediate
-      if (data.is_existing_user && data.redirect_url) {
-        window.location.href = data.redirect_url;
-        return;
-      }
-
-      // Case: New User -> Check Inbox
+      // Success
       setStatus('success');
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Verification failed');
+      setErrorMsg(err instanceof Error ? err.message : 'Invalid OTP. Please try again.');
       setStatus('error');
     }
   };
