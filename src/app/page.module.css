@@ -334,6 +334,50 @@
   margin-bottom: 0.5rem;
 }
 
+/* Event Ended State */
+.eventEndedContainer {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.eventEndedIcon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+}
+
+.eventEndedTitle {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #b8860b;
+  margin-bottom: 1rem;
+}
+
+.winnerBanner {
+  margin-top: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+  border: 2px solid #d4af37;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #7b6100;
+  text-align: center;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+  }
+}
+
 .otpInput {
   text-align: center;
   letter-spacing: 0.5rem;

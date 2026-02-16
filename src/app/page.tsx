@@ -16,6 +16,7 @@ interface EventData {
 
 export default function Home() {
   const [event, setEvent] = useState<EventData | null>(null);
+  const [eventEnded, setEventEnded] = useState(false);
   const [step, setStep] = useState(1); // 1: Register Init, 2: OTP
   const [formData, setFormData] = useState({
     username: '', // Still needed for API but maybe hide/auto-fill if design only shows Name/Email? Design shows "Name" and "Email". 
@@ -33,9 +34,17 @@ export default function Home() {
 
   useEffect(() => {
     fetch(`${API_BASE}/latest/`)
-      .then(res => res.ok ? res.json() : Promise.reject('Failed'))
-      .then(data => setEvent(data.data || data))
-      .catch(console.error);
+      .then(res => {
+        if (res.status === 404) {
+          setEventEnded(true);
+          return null;
+        }
+        return res.ok ? res.json() : Promise.reject('Failed');
+      })
+      .then(data => {
+        if (data) setEvent(data.data || data);
+      })
+      .catch(() => setEventEnded(true));
   }, []);
 
   const handleRegisterInit = async (e: React.FormEvent) => {
@@ -116,7 +125,7 @@ export default function Home() {
     }
   };
 
-  if (!event) return <div className={styles.main} style={{ justifyContent: 'center', alignItems: 'center' }}>Loading...</div>;
+  if (!event && !eventEnded) return <div className={styles.main} style={{ justifyContent: 'center', alignItems: 'center' }}>Loading...</div>;
 
   return (
     <main className={styles.main}>
@@ -154,9 +163,23 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Registration Card */}
+        {/* Registration Card or Event Ended */}
         <div className={styles.card}>
-          {status === 'success' ? (
+          {eventEnded ? (
+            <div className={styles.eventEndedContainer}>
+              <div className={styles.eventEndedIcon}>🏁</div>
+              <h2 className={styles.eventEndedTitle}>Event Has Ended</h2>
+              <p className={styles.featureText}>
+                This event has concluded. Thank you to everyone who participated!
+              </p>
+              <p className={styles.featureText} style={{ marginTop: '1rem' }}>
+                Stay tuned for upcoming events from the Rollin Community.
+              </p>
+              <div className={styles.winnerBanner}>
+                🏆 The winners for the event will be announced soon..
+              </div>
+            </div>
+          ) : status === 'success' ? (
             <div style={{ textAlign: 'center' }}>
               <h2 className={styles.successTitle}>Check your inbox!</h2>
               <p className={styles.featureText}>
